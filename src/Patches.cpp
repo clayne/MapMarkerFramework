@@ -3,8 +3,8 @@
 
 bool Patch::WriteDiscoveryMusicPatch(AssignMusicCallback* a_callback)
 {
-	// SkyrimSE 1.6.318.0: 0x008B12B0+0x2BB
-	REL::Relocation<std::uintptr_t> hook{ Offset::HUDNotifications::ProcessMessage, 0x2BB };
+	// SkyrimSE 1.5.97.0: 0x00881383+0x3B3
+	REL::Relocation<std::uintptr_t> hook{ Offset::HUDNotifications::ProcessMessage, 0x3B3 };
 
 	struct Patch : Xbyak::CodeGenerator
 	{
@@ -13,8 +13,8 @@ bool Patch::WriteDiscoveryMusicPatch(AssignMusicCallback* a_callback)
 			Xbyak::Label funcLbl;
 			Xbyak::Label retnLbl;
 
-			mov(edx, ptr[r15 + 0x44]);
-			lea(rcx, ptr[rbp - 0x19]);
+			mov(edx, ptr[rdi + 0x44]);
+			lea(rcx, ptr[rbp - 0x29]);
 			call(ptr[rip + funcLbl]);
 			jmp(ptr[rip + retnLbl]);
 
@@ -22,7 +22,7 @@ bool Patch::WriteDiscoveryMusicPatch(AssignMusicCallback* a_callback)
 			dq(a_funcAddr);
 
 			L(retnLbl);
-			dq(a_hookAddr + 0x1EB); // SkyrimSE 1.6.318.0: 0x008B156B
+			dq(a_hookAddr + 0x16A); // SkyrimSE 1.5.97.0: 0x008814ED
 		}
 	};
 

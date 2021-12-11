@@ -40,20 +40,31 @@ void InitLogger()
 	logger::info(FMT_STRING("{} v{}"), Version::PROJECT, Version::NAME);
 }
 
-extern "C" DLLEXPORT constinit auto SKSEPlugin_Version =
-[]() {
-	SKSE::PluginVersionData v{};
-	v.pluginVersion = Version::MAJOR;
-	v.PluginName(Version::PROJECT);
-	v.AuthorName("Parapets"sv);
-	v.UsesAddressLibrary(true);
-	return v;
-}();
-
-extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
+extern "C" DLLEXPORT bool SKSEAPI
+	SKSEPlugin_Query(const SKSE::QueryInterface * a_skse, SKSE::PluginInfo * a_info)
 {
 	InitLogger();
 
+	a_info->infoVersion = SKSE::PluginInfo::kVersion;
+	a_info->name = Version::PROJECT.data();
+	a_info->version = Version::MAJOR;
+
+	if (a_skse->IsEditor()) {
+		logger::critical("Loaded in editor, marking as incompatible"sv);
+		return false;
+	}
+
+	const auto ver = a_skse->RuntimeVersion();
+	if (ver < SKSE::RUNTIME_1_5_39) {
+		logger::critical(FMT_STRING("Unsupported runtime version {}"), ver.string());
+		return false;
+	}
+
+	return true;
+}
+
+extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
+{
 	logger::info("{} loaded", Version::PROJECT);
 
 	SKSE::Init(a_skse);

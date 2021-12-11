@@ -10,7 +10,7 @@ void LocalMapManager::InstallHooks()
 {
 	auto& trampoline = SKSE::GetTrampoline();
 
-	auto door_hook = REL::Relocation<std::uintptr_t>{ Offset::LocalMapMenu::PopulateData, 0x941 };
+	auto door_hook = REL::Relocation<std::uintptr_t>{ Offset::LocalMapMenu::PopulateData, 0x7B5 };
 	_GetSpecialMarkerType = trampoline.write_call<5>(door_hook.address(), GetSpecialMarkerType);
 
 	logger::info("Installed hooks for local map"sv);
